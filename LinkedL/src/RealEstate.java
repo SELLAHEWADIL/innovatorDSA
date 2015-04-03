@@ -54,6 +54,49 @@ private static int getnext(int lotn)
 	
 }
 
+
+private static int reset() 
+{
+	House h2=(House) ml.get(0);
+	House SortedList=new House("x","x",0, 0,0,0);
+    	SortedList=h2;
+    	showHouse(SortedList);
+	return 0;	
+}
+
+private static int delete(int lotnum,LinkedList<House> ml)
+{	
+	int z= ml.size();
+
+	int location = 0;
+	int status=0;
+	
+	int searchableitem= lotnum;
+	while (location <= z)
+	{    
+		if (location == z) {
+        	status=-1;
+        	break;
+		} 
+		else
+		{
+	House h2=(House) ml.get(location);
+	int cuurentlot=h2.lotNumber;
+		
+	if (cuurentlot == searchableitem) 
+	{	   
+		ml.remove(location);
+		status=0;	
+	   break;
+		}
+        
+		}
+		location++;
+	}//while close
+	
+	return status;
+}
+
 private static int search(int lotnum,LinkedList<House> ml)
 {
 	
@@ -174,13 +217,23 @@ private static class ActionHandler implements ActionListener
 public void actionPerformed(ActionEvent event)
 // Listener for the button events
 {
-if (event.getActionCommand().equals("Reset"))
-{ // Handles Reset event
+	if (event.getActionCommand().equals("Reset"))
+	{ // Handles Reset event
 
-clearHouse();
-statusLabel.setText("List reset");
+		{
+			try
+			{
+				reset();
+				statusLabel.setText("List reset");
+			}
+			catch(Exception e)
+			{
+				statusLabel.setText("List is Empty");
+				clearHouse();
+			}
+		}
 
-}
+	}
 else
 if (event.getActionCommand().equals("Next"))
 { // Handles Next event
@@ -188,8 +241,11 @@ if (ml.size() == 0)
 statusLabel.setText("list is empty!");
 else
 	{
-	int lotNumber = Integer.parseInt(lotText.getText());
-	
+	int lotNumber;
+	if(lotText.getText().equals(""))
+	 lotNumber=0;
+	else
+	lotNumber = Integer.parseInt(lotText.getText());
 	
 	int currentindex=getnext(lotNumber);
 	    currentindex++;
@@ -199,7 +255,7 @@ else
 	    }
     	showHouse(ml.get(currentindex));
     	statusLabel.setText("Next house displayed");
-    }
+	}
 
 }
 
@@ -222,26 +278,37 @@ catch (NumberFormatException badHouseData)
 statusLabel.setText("Number? " + badHouseData.getMessage());
 }
 }
-/*else
-if (event.getActionCommand().equals("Delete"))
-{ // Handles Delete event
-try
-{
-house = getHouse();
-if (list.isThere(house))
-{
-list.delete(house);
-statusLabel.setText("House deleted");
-}
 else
-statusLabel.setText("Lot number not on list");
-}
-catch (NumberFormatException badHouseData)
-{
-// Text field info incorrectly formated
-statusLabel.setText("Number? " + badHouseData.getMessage());
-}
-}*/
+	if (event.getActionCommand().equals("Delete"))
+	{ // Handles Delete event
+	try
+	{
+
+		int lotNumber;
+		try
+		{
+		     lotNumber = Integer.parseInt(lotText.getText());
+		     
+			int status=delete(lotNumber,ml);
+			if(status==-1)
+				statusLabel.setText("House not found");
+		     
+			else
+				statusLabel.setText("House Deleted");
+		     }
+
+		catch (NumberFormatException badSortedListData)
+		{
+		// Text field info incorrectly formated
+		statusLabel.setText("Number? " + badSortedListData.getMessage());
+		}
+	}
+	catch (NumberFormatException badSortedListData)
+	{
+	// Text field info incorrectly formated
+	statusLabel.setText("Number? " + badSortedListData.getMessage());
+	}
+	}
 else
 if (event.getActionCommand().equals("Clear"))
 { // Handles Clear event
@@ -277,7 +344,6 @@ statusLabel.setText("Number? " + badHouseData.getMessage());
 }
 public static void main(String args[]) throws IOException
 {
-House house;
 //char command;
 //int length;
 JLabel blankLabel; // To use up one frame slot
